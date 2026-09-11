@@ -33,6 +33,36 @@ const LETTERS = [
 ];
 
 // ─────────────────────────────────────────────────────────────
+// EXAMPLE WORDS  —  2-3 familiar words that START with each letter.
+// One is picked at random and shown as a small picture (emoji) + word
+// on the letter → name card.
+// ─────────────────────────────────────────────────────────────
+const EXAMPLES = {
+  'א': [{ word: 'אַרְיֵה',    emoji: '🦁' }, { word: 'אוֹטוֹבּוּס', emoji: '🚌' }, { word: 'אֲנָנָס',   emoji: '🍍' }],
+  'ב': [{ word: 'בַּנָנָה',    emoji: '🍌' }, { word: 'בַּיִת',      emoji: '🏠' }, { word: 'בַּלּוֹן',   emoji: '🎈' }],
+  'ג': [{ word: 'גָּמָל',      emoji: '🐪' }, { word: 'גְּלִידָה',   emoji: '🍦' }, { word: 'גֶּזֶר',     emoji: '🥕' }],
+  'ד': [{ word: 'דָּג',        emoji: '🐟' }, { word: 'דֹּב',        emoji: '🐻' }, { word: 'דֶּגֶל',     emoji: '🚩' }],
+  'ה': [{ word: 'הַר',         emoji: '⛰️' }, { word: 'הֶלִיקוֹפְּטֶר', emoji: '🚁' }, { word: 'הַמְבּוּרְגֶּר', emoji: '🍔' }],
+  'ו': [{ word: 'וֶרֶד',       emoji: '🌹' }, { word: 'וָו',         emoji: '🪝' }],
+  'ז': [{ word: 'זֶבְּרָה',    emoji: '🦓' }, { word: 'זְאֵב',       emoji: '🐺' }, { word: 'זַיִת',      emoji: '🫒' }],
+  'ח': [{ word: 'חֲתוּל',      emoji: '🐱' }, { word: 'חָלָב',       emoji: '🥛' }, { word: 'חֲזִיר',     emoji: '🐷' }],
+  'ט': [{ word: 'טְרַקְטוֹר',  emoji: '🚜' }, { word: 'טַוָּס',      emoji: '🦚' }, { word: 'טִיל',       emoji: '🚀' }],
+  'י': [{ word: 'יָרֵחַ',      emoji: '🌙' }, { word: 'יַהֲלוֹם',    emoji: '💎' }, { word: 'יָד',        emoji: '✋' }],
+  'כ': [{ word: 'כֶּלֶב',      emoji: '🐶' }, { word: 'כּוֹכָב',     emoji: '⭐' }, { word: 'כֶּתֶר',     emoji: '👑' }],
+  'ל': [{ word: 'לִימוֹן',     emoji: '🍋' }, { word: 'לֵב',         emoji: '❤️' }, { word: 'לִוְיָתָן',  emoji: '🐋' }],
+  'מ': [{ word: 'מְכוֹנִית',   emoji: '🚗' }, { word: 'מַיִם',       emoji: '💧' }, { word: 'מַתָּנָה',   emoji: '🎁' }],
+  'נ': [{ word: 'נָחָשׁ',      emoji: '🐍' }, { word: 'נֵר',         emoji: '🕯️' }, { word: 'נַעַל',      emoji: '👟' }],
+  'ס': [{ word: 'סֻכָּרִיָּה', emoji: '🍬' }, { word: 'סִירָה',      emoji: '⛵' }, { word: 'סוּס',       emoji: '🐴' }],
+  'ע': [{ word: 'עֵץ',         emoji: '🌳' }, { word: 'עַיִן',       emoji: '👁️' }, { word: 'עוּגָה',     emoji: '🍰' }],
+  'פ': [{ word: 'פִּיל',       emoji: '🐘' }, { word: 'פֶּרַח',      emoji: '🌸' }, { word: 'פִּיצָה',    emoji: '🍕' }],
+  'צ': [{ word: 'צִפּוֹר',     emoji: '🐦' }, { word: 'צָב',         emoji: '🐢' }, { word: 'צְדָפָה',    emoji: '🐚' }],
+  'ק': [{ word: 'קוֹף',        emoji: '🐒' }, { word: 'קֶשֶׁת',      emoji: '🌈' }, { word: 'קַרְנַף',    emoji: '🦏' }],
+  'ר': [{ word: 'רַכֶּבֶת',    emoji: '🚂' }, { word: 'רֶגֶל',       emoji: '🦵' }, { word: 'רוֹבּוֹט',   emoji: '🤖' }],
+  'ש': [{ word: 'שֶׁמֶשׁ',     emoji: '☀️' }, { word: 'שָׁעוֹן',     emoji: '⏰' }, { word: 'שֶׁלֶג',     emoji: '❄️' }],
+  'ת': [{ word: 'תַּפּוּחַ',   emoji: '🍎' }, { word: 'תּוּת',       emoji: '🍓' }, { word: 'תַּרְנְגוֹל', emoji: '🐔' }],
+};
+
+// ─────────────────────────────────────────────────────────────
 // AUDIO
 // ─────────────────────────────────────────────────────────────
 let currentAudio = null;
@@ -227,6 +257,17 @@ function renderLetterToName(container) {
   big.className   = 'big-letter';
   big.textContent = target.id;
   card.appendChild(big);
+
+  // A random example word that starts with this letter (picture + word)
+  const examples = EXAMPLES[target.id];
+  if (examples && examples.length) {
+    const pick = examples[Math.floor(Math.random() * examples.length)];
+    const ex = document.createElement('div');
+    ex.className = 'example';
+    ex.innerHTML = `<span class="example-emoji">${pick.emoji}</span>` +
+                   `<span class="example-word">${pick.word}</span>`;
+    card.appendChild(ex);
+  }
 
   // Two speaker chips: hear the NAME and hear the SOUND it makes
   const chips = document.createElement('div');

@@ -95,6 +95,23 @@ body {
   letter-spacing: 0.04em;
 }
 
+/* example word (picture + word) that starts with the letter */
+.example {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.example-emoji { font-size: 3.4rem; line-height: 1; }
+
+.example-word {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #5c6bc0;
+}
+
 /* two chips under the big letter: hear the name / hear the sound */
 .audio-chips {
   margin-top: 18px;

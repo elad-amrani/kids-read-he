@@ -242,7 +242,7 @@ function renderQuestion() {
 function renderLetterToName(container) {
   const { target, choices } = currentQuestion;
 
-  container.appendChild(makeInstruction('אֵיךְ קוֹרְאִים לָאוֹת הַזֹּאת?'));
+  container.appendChild(makeInstruction('אֵיךְ קוֹרְאִים לָאוֹת? לְחַץ 🔊 וּבְחַר'));
 
   const card = document.createElement('div');
   card.className = 'question-card';
@@ -309,8 +309,10 @@ function makeChoices(choices, target, showName) {
     btn.dataset.id = letter.id;
 
     if (showName) {
-      // choice shows the Hebrew name only
-      btn.innerHTML = `<span class="choice-name">${letter.name}</span>`;
+      // audio-only option: the button just says "choose" — the name is heard,
+      // never shown (the written name would reveal the letter).
+      btn.textContent = 'בְּחַר';
+      btn.classList.add('choice-choose');
     } else {
       // choice is the letter glyph
       btn.textContent = letter.id;
@@ -375,17 +377,25 @@ function handleAnswer(btn, correct) {
     }
   } else {
     // Wrong: mark the tap red, reveal the right answer green, then move on.
-    // No sound — a "try again" chime would contradict the one-attempt rule.
+    // No "try again" buzzer — but do teach the right answer.
     btn.classList.add('wrong');
     revealCorrect(target);
     showFeedbackBadge('❌');
+
+    // In audio-only mode the answer is a sound, so play the correct
+    // name + sound so a miss still teaches what it was.
+    let advanceDelay = 2000;
+    if (currentQuestion.mode === 'letter-to-name') {
+      setTimeout(() => playLetterBoth(target), 350);
+      advanceDelay = 2600;
+    }
 
     updateCard(target.id, 1);   // lapse — resets this letter in the SR schedule
     requeueMissed(target);      // and practice it again later this session
     streak = 0;
     updateHeader();
 
-    setTimeout(nextQuestion, 2000);
+    setTimeout(nextQuestion, advanceDelay);
   }
 }
 

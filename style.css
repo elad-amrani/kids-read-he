@@ -157,7 +157,6 @@ body {
   font-size: 3.6rem;
 }
 
-.choice-name  { font-size: 2rem;  line-height: 1.2; }
 
 .choice-btn:active:not(:disabled) {
   transform: translateY(5px);

@@ -91,7 +91,6 @@ function playLetterBoth(letter) {
 }
 
 function playCorrect() { playSound('correct.mp3'); }
-function playWrong()   { playSound('incorrect.mp3'); }
 
 // ─────────────────────────────────────────────────────────────
 // SPACED REPETITION  (simplified SM-2)
@@ -395,10 +394,10 @@ function handleAnswer(btn, correct) {
       setTimeout(nextQuestion, 1100);
     }
   } else {
-    // Wrong: mark the tap red, reveal the right answer green, then move on
+    // Wrong: mark the tap red, reveal the right answer green, then move on.
+    // No sound — a "try again" chime would contradict the one-attempt rule.
     btn.classList.add('wrong');
     revealCorrect(target);
-    playWrong();
     showFeedbackBadge('❌');
 
     updateCard(target.id, 1);   // lapse — resets this letter in the SR schedule

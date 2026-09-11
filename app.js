@@ -78,9 +78,6 @@ function playSound(filename) {
   return audio;
 }
 
-function playLetterName(letter)  { return playSound(letter.nameAudio); }
-function playLetterSound(letter) { return playSound(letter.soundAudio); }
-
 // Play the name, then the sound right after ("bet … ba").
 function playLetterBoth(letter) {
   const a = playSound(letter.nameAudio);
@@ -255,7 +252,8 @@ function renderLetterToName(container) {
   big.textContent = target.id;
   card.appendChild(big);
 
-  // A random example word that starts with this letter (picture + word)
+  // A random example word that starts with this letter (picture + word).
+  // No name/sound chips here — they would give away the answer.
   const examples = EXAMPLES[target.id];
   if (examples && examples.length) {
     const pick = examples[Math.floor(Math.random() * examples.length)];
@@ -265,16 +263,6 @@ function renderLetterToName(container) {
                    `<span class="example-word">${pick.word}</span>`;
     card.appendChild(ex);
   }
-
-  // Two speaker chips: hear the NAME and hear the SOUND it makes
-  const chips = document.createElement('div');
-  chips.className = 'audio-chips';
-
-  const nameChip  = makeAudioChip('🔊 הַשֵּׁם',  () => playLetterName(target));
-  const soundChip = makeAudioChip(`🔊 הַצְּלִיל · ${target.sound}`, () => playLetterSound(target));
-  chips.appendChild(nameChip);
-  chips.appendChild(soundChip);
-  card.appendChild(chips);
 
   container.appendChild(card);
   container.appendChild(makeChoices(choices, target, /* showName */ true));
@@ -309,14 +297,6 @@ function makeInstruction(text) {
   el.className   = 'instruction';
   el.textContent = text;
   return el;
-}
-
-function makeAudioChip(label, onClick) {
-  const chip = document.createElement('button');
-  chip.className   = 'audio-chip';
-  chip.textContent = label;
-  chip.addEventListener('click', onClick);
-  return chip;
 }
 
 function makeChoices(choices, target, showName) {

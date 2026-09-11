@@ -1,0 +1,335 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: 'Arial Hebrew', 'Alef', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* ── Header ─────────────────────────────────────── */
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid rgba(255,255,255,0.6);
+}
+
+.stat {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+#reset-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: 0.45;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: opacity 0.15s;
+}
+
+#reset-btn:hover { opacity: 0.9; }
+
+/* ── Quiz area ───────────────────────────────────── */
+#quiz-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  gap: 24px;
+}
+
+/* ── Instruction text ────────────────────────────── */
+.instruction {
+  font-size: 1.5rem;
+  color: #666;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+/* ── Question card ───────────────────────────────── */
+.question-card {
+  background: white;
+  border-radius: 32px;
+  padding: 28px 56px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+.big-letter {
+  font-size: 9rem;
+  font-weight: 900;
+  color: #5c6bc0;
+  line-height: 1.1;
+  text-shadow: 4px 4px 0 rgba(92, 107, 192, 0.18);
+}
+
+.letter-sound {
+  margin-top: 10px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #9aa0c9;
+  letter-spacing: 0.04em;
+}
+
+/* two chips under the big letter: hear the name / hear the sound */
+.audio-chips {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.audio-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #5c6bc0;
+  background: rgba(92, 107, 192, 0.12);
+  cursor: pointer;
+  transition: transform 0.1s, background 0.1s;
+}
+
+.audio-chip:hover  { background: rgba(92, 107, 192, 0.2); }
+.audio-chip:active { transform: scale(0.94); }
+
+.sound-icon {
+  font-size: 5rem;
+  cursor: pointer;
+  display: inline-block;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.18); }
+}
+
+/* ── Choice buttons ──────────────────────────────── */
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.choice-btn {
+  border: none;
+  border-radius: 22px;
+  padding: 20px 12px;
+  font-size: 2.2rem;
+  font-family: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  color: white;
+  min-height: 96px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+  transition: transform 0.08s, box-shadow 0.08s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* glyph-only choices (name-to-letter mode) */
+.choice-btn.choice-glyph {
+  font-size: 3.6rem;
+}
+
+.choice-name  { font-size: 2rem;  line-height: 1.2; }
+.choice-sound { font-size: 1rem;  opacity: 0.85; font-weight: 700; letter-spacing: 0.05em; }
+
+.choice-btn:active:not(:disabled) {
+  transform: translateY(5px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+
+.choice-btn:disabled { cursor: default; }
+
+/* Wrapper for name choice + standalone speaker (letter-to-name mode) */
+.choice-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.choice-wrap .choice-btn {
+  flex: 1;
+}
+
+.speaker-btn {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 1.5rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform 0.1s, background 0.1s;
+}
+
+.speaker-btn:hover  { background: rgba(255, 255, 255, 0.5); }
+.speaker-btn:active { transform: scale(0.92); }
+.speaker-btn:disabled { opacity: 0.35; cursor: default; }
+
+/* colour the four choices */
+.choices > .choice-btn:nth-child(1),
+.choices > .choice-wrap:nth-child(1) .choice-btn { background: #ff7675; }
+
+.choices > .choice-btn:nth-child(2),
+.choices > .choice-wrap:nth-child(2) .choice-btn { background: #4facfe; }
+
+.choices > .choice-btn:nth-child(3),
+.choices > .choice-wrap:nth-child(3) .choice-btn { background: #43d08a; }
+
+.choices > .choice-btn:nth-child(4),
+.choices > .choice-wrap:nth-child(4) .choice-btn { background: #fdd835; color: #555; }
+
+/* Feedback states */
+.choice-btn.correct {
+  background: #00b894 !important;
+  color: white !important;
+  animation: pop 0.45s ease;
+}
+
+.choice-btn.wrong {
+  background: #e17055 !important;
+  color: white !important;
+  animation: shake 0.4s ease;
+}
+
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-9px); }
+  75%       { transform: translateX(9px); }
+}
+
+/* ── Feedback badge (correct / wrong flash) ──────── */
+.feedback-badge {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  font-size: 7rem;
+  pointer-events: none;
+  z-index: 200;
+  animation: badgePop 0.7s ease forwards;
+}
+
+@keyframes badgePop {
+  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 1; }
+  50%  { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1);   opacity: 0; }
+}
+
+/* ── Celebration overlay ─────────────────────────── */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 100;
+  text-align: center;
+  padding: 20px;
+}
+
+#overlay.hidden { display: none; }
+
+.overlay-emoji {
+  font-size: 7rem;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.overlay-title {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #e17055;
+}
+
+.overlay-sub {
+  font-size: 1.4rem;
+  color: #636e72;
+}
+
+@keyframes popIn {
+  from { transform: scale(0) rotate(-15deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* ── Session complete screen ─────────────────────── */
+.complete-screen {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.complete-screen h1 {
+  font-size: 3rem;
+  color: #e17055;
+}
+
+.complete-screen p {
+  font-size: 1.5rem;
+  color: #636e72;
+}
+
+.play-again-btn {
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 22px;
+  padding: 18px 44px;
+  font-size: 1.6rem;
+  font-family: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #4834d4;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.play-again-btn:active {
+  transform: translateY(5px);
+  box-shadow: 0 1px 0 #4834d4;
+}

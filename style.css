@@ -243,6 +243,20 @@ body {
   background: #e17055 !important;
   color: white !important;
   animation: shake 0.4s ease;
+  opacity: 0.85;
+}
+
+/* the correct answer revealed after a wrong guess */
+.choice-btn.reveal {
+  outline: 4px solid #00b894;
+  outline-offset: 3px;
+  animation: revealPulse 0.6s ease;
+}
+
+@keyframes revealPulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
 
 @keyframes pop {

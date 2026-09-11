@@ -197,7 +197,6 @@ let sessionStars    = 0;
 let streak          = 0;
 let answered        = false;
 let totalStars      = 0;
-let wrongAttempts   = 0;
 
 // ─────────────────────────────────────────────────────────────
 // INIT / NEXT
@@ -230,7 +229,6 @@ function nextQuestion() {
 // ─────────────────────────────────────────────────────────────
 function renderQuestion() {
   answered        = false;
-  wrongAttempts   = 0;
   const target    = sessionCards[currentIndex];
   currentQuestion = generateQuestion(target);
 
@@ -371,42 +369,58 @@ function makeChoices(choices, target, showName) {
 // ANSWER HANDLING
 // ─────────────────────────────────────────────────────────────
 function handleAnswer(btn, correct) {
+  // One attempt only — lock every choice immediately
+  answered = true;
+  document.querySelectorAll('.choice-btn, .speaker-btn').forEach(b => { b.disabled = true; });
+
+  const target = currentQuestion.target;
+
   if (correct) {
-    answered = true;
-    document.querySelectorAll('.choice-btn, .speaker-btn').forEach(b => { b.disabled = true; });
     btn.classList.add('correct');
     playCorrect();
     showFeedbackBadge('🌟');
 
-    // quality: 5 = no mistakes, 3 = one mistake, 1 = two+ mistakes
-    const quality = wrongAttempts === 0 ? 5 : wrongAttempts === 1 ? 3 : 1;
-    updateCard(currentQuestion.target.id, quality);
+    updateCard(target.id, 5);   // clean first-try success
 
     sessionStars++;
     totalStars++;
     localStorage.setItem('total_stars', totalStars);
-    if (wrongAttempts === 0) streak++;
+    streak++;
     updateHeader();
 
-    if (wrongAttempts === 0 && streak % 5 === 0 && streak > 0) {
+    if (streak % 5 === 0 && streak > 0) {
       showOverlay('🌟', '🎉 מְעֻלֶּה! 🎉', `${streak} בָּרֶצֶף!`);
       setTimeout(nextQuestion, 2600);
     } else {
       setTimeout(nextQuestion, 1100);
     }
   } else {
-    // Disable only this button — keep others active for retry
-    btn.disabled = true;
+    // Wrong: mark the tap red, reveal the right answer green, then move on
     btn.classList.add('wrong');
+    revealCorrect(target);
     playWrong();
-    showFeedbackBadge('🙈');
+    showFeedbackBadge('❌');
 
-    if (wrongAttempts === 0) {
-      streak = 0;
-      updateHeader();
-    }
-    wrongAttempts++;
+    updateCard(target.id, 1);   // lapse — resets this letter in the SR schedule
+    requeueMissed(target);      // and practice it again later this session
+    streak = 0;
+    updateHeader();
+
+    setTimeout(nextQuestion, 2000);
   }
+}
+
+// Highlight the correct choice so a wrong guess still teaches the answer
+function revealCorrect(target) {
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    if (b.dataset.id === target.id) b.classList.add('correct', 'reveal');
+  });
+}
+
+// Re-add a missed letter to the end of this session (once) for extra practice
+function requeueMissed(target) {
+  const alreadyLater = sessionCards.slice(currentIndex + 1).some(l => l.id === target.id);
+  if (!alreadyLater) sessionCards.push(target);
 }
 
 // ─────────────────────────────────────────────────────────────

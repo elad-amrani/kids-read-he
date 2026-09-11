@@ -291,9 +291,8 @@ function makeChoices(choices, target, showName) {
     btn.dataset.id = letter.id;
 
     if (showName) {
-      // choice shows the Hebrew name (big) + sound (small)
-      btn.innerHTML = `<span class="choice-name">${letter.name}</span>` +
-                      `<span class="choice-sound">${letter.sound}</span>`;
+      // choice shows the Hebrew name only
+      btn.innerHTML = `<span class="choice-name">${letter.name}</span>`;
     } else {
       // choice is the letter glyph
       btn.textContent = letter.id;

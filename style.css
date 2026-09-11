@@ -166,7 +166,6 @@ body {
 }
 
 .choice-name  { font-size: 2rem;  line-height: 1.2; }
-.choice-sound { font-size: 1rem;  opacity: 0.85; font-weight: 700; letter-spacing: 0.05em; }
 
 .choice-btn:active:not(:disabled) {
   transform: translateY(5px);

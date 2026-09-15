@@ -173,12 +173,30 @@ function shuffle(arr) {
 
 // ─────────────────────────────────────────────────────────────
 // QUESTION GENERATION
-//   letter-to-name : see the letter → pick / hear its name
-//   name-to-letter : hear the name  → pick the letter
+//   name-to-letter : hear the name  → pick the letter   ("sound → letter")
+//   letter-to-name : see the letter → pick / hear its name ("letter → sound")
+// quizMode: 's2l' (default) or 'l2s'  — see the header toggle
 // ─────────────────────────────────────────────────────────────
+
+// Letters allowed to appear as choices: only ones we're currently learning
+// or have already learned — never a letter that hasn't been introduced yet.
+function getChoicePool() {
+  const cards = loadCards();
+  const pool  = [];
+  const seen  = new Set();
+  const add = l => { if (!seen.has(l.id)) { seen.add(l.id); pool.push(l); } };
+
+  // already introduced (still learning + graduated)
+  LETTERS.forEach(l => { if (cards[l.id]?.introduced) add(l); });
+  // plus the letters in this session's active pool (may be brand-new today)
+  sessionCards.forEach(add);
+  return pool;
+}
+
 function generateQuestion(target) {
-  const mode        = Math.random() < 0.5 ? 'letter-to-name' : 'name-to-letter';
-  const distractors = shuffle(LETTERS.filter(l => l.id !== target.id)).slice(0, 3);
+  const mode = quizMode === 'l2s' ? 'letter-to-name' : 'name-to-letter';
+  const pool = getChoicePool().filter(l => l.id !== target.id);
+  const distractors = shuffle(pool).slice(0, 3);
   const choices     = shuffle([...distractors, target]);
   return { mode, target, choices };
 }
@@ -193,6 +211,7 @@ let sessionStars    = 0;
 let streak          = 0;
 let answered        = false;
 let totalStars      = 0;
+let quizMode        = 's2l';   // 's2l' = sound→letter (default), 'l2s' = letter→sound
 
 // ─────────────────────────────────────────────────────────────
 // INIT / NEXT
@@ -423,6 +442,29 @@ function updateHeader() {
 }
 
 // ─────────────────────────────────────────────────────────────
+// QUIZ-DIRECTION TOGGLE
+// ─────────────────────────────────────────────────────────────
+function updateModeButton() {
+  const btn = document.getElementById('mode-btn');
+  if (!btn) return;
+  if (quizMode === 's2l') {
+    btn.textContent = '🔊→א';
+    btn.title = 'עַכְשָׁו: שׁוֹמְעִים וּבוֹחֲרִים אוֹת · לַחֲלִיפָה: רוֹאִים אוֹת וּבוֹחֲרִים צְלִיל';
+  } else {
+    btn.textContent = 'א→🔊';
+    btn.title = 'עַכְשָׁו: רוֹאִים אוֹת וּבוֹחֲרִים צְלִיל · לַחֲלִיפָה: שׁוֹמְעִים וּבוֹחֲרִים אוֹת';
+  }
+}
+
+function toggleMode() {
+  quizMode = quizMode === 's2l' ? 'l2s' : 's2l';
+  localStorage.setItem('quiz_mode', quizMode);
+  updateModeButton();
+  // re-render the current question in the new direction (if a quiz is active)
+  if (sessionCards.length > 0 && currentIndex < sessionCards.length) renderQuestion();
+}
+
+// ─────────────────────────────────────────────────────────────
 // OVERLAY / FEEDBACK
 // ─────────────────────────────────────────────────────────────
 function showFeedbackBadge(emoji) {
@@ -479,9 +521,15 @@ function renderAllCaughtUp() {
 // START
 // ─────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  quizMode = localStorage.getItem('quiz_mode') || 's2l';
+  updateModeButton();
+
+  document.getElementById('mode-btn').addEventListener('click', toggleMode);
+
   document.getElementById('reset-btn').addEventListener('click', () => {
     if (confirm('לְאַפֵּס אֶת כָּל הַהִתְקַדְּמוּת וְהַכּוֹכָבִים?')) {
       localStorage.clear();
+      localStorage.setItem('quiz_mode', quizMode);  // keep the direction preference
       init();
     }
   });

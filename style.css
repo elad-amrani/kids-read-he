@@ -51,6 +51,22 @@ body {
 
 #reset-btn:hover { opacity: 0.9; }
 
+#mode-btn {
+  background: rgba(108, 92, 231, 0.12);
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #6c5ce7;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#mode-btn:hover  { background: rgba(108, 92, 231, 0.22); }
+#mode-btn:active { transform: scale(0.94); }
+
 /* ── Quiz area ───────────────────────────────────── */
 #quiz-area {
   flex: 1;
